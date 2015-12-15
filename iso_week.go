@@ -25,6 +25,38 @@ func New(t time.Time) *ISOWeek {
 	}
 }
 
+// FromWeekNbr is useful to retrieve lower and uppper bounds of a week number (using UTC time).
+func FromWeekNbr(yr, wk int) *ISOWeek {
+	lower := time.Date(yr, 0, 0, 0, 0, 0, 0, time.UTC)
+	isoYear, isoWeek := lower.ISOWeek()
+
+	//  back to Monday
+	for lower.Weekday() != time.Monday {
+		lower = lower.AddDate(0, 0, -1)
+		isoYear, isoWeek = lower.ISOWeek()
+	}
+
+	// forward to the first day of the first week
+	for isoYear < yr {
+		lower = lower.AddDate(0, 0, 7)
+		isoYear, isoWeek = lower.ISOWeek()
+	}
+
+	// forward to the first day of the given week
+	for isoWeek < wk {
+		lower = lower.AddDate(0, 0, 7)
+		isoYear, isoWeek = lower.ISOWeek()
+	}
+	upper := lower.AddDate(0, 0, 7)
+	upper = upper.Add(-1)
+	return &ISOWeek{
+		Year:       yr,
+		Week:       wk,
+		LowerBound: lower,
+		UpperBound: upper,
+	}
+}
+
 // Equals checks whether or not two iso weeks have the same value (year + week).
 func (iw *ISOWeek) Equals(other *ISOWeek) bool {
 	if iw == nil || other == nil {
