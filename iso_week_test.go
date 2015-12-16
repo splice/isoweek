@@ -4,8 +4,6 @@ import (
 	"testing"
 	"time"
 
-	"bitbucket.org/splice/api/splice/logger"
-
 	"github.com/stretchr/testify/assert"
 )
 
@@ -85,7 +83,6 @@ func (t *DbTime) ToTime() time.Time {
 	if t.String != "" && t.String != nullTime {
 		ts, err := time.Parse(DbtimeLayout, t.String)
 		if err != nil {
-			logger.Error(err)
 			return time.Time{}
 		}
 		t.Time = ts
